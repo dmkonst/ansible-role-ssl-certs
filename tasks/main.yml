@@ -22,6 +22,11 @@
     become: no
     tags: [ssl-certs,configuration]
 
+  - local_action: stat path={{ ssl_certs_local_ca_pub_path }}
+    register: stat_ca_pub
+    become: no
+    tags: [ssl-certs,configuration]
+
   - name: Test if privkey file is needed
     fail: msg="Privkey file {{ ssl_certs_local_privkey_path }} is missing"
     when: not stat_privkey.stat.exists and stat_cert.stat.exists
@@ -62,6 +67,19 @@
     when: >
       ( stat_cert.stat.exists )
       and ( ssl_certs_local_cert_data == '' )
+    tags: [ssl-certs,configuration]
+
+  - name: Copy SSL ca public key file (if exists)
+    copy:
+      src: "{{ ssl_certs_local_ca_pub_path }}"
+      dest: "{{ ssl_certs_ca_pub_path }}"
+      owner: "{{ ssl_certs_path_owner }}"
+      group: "{{ ssl_certs_path_group }}"
+      mode: "{{ ssl_certs_mode }}"
+      force: "{{ ssl_certs_force_replace }}"
+    when: >
+      ( stat_ca_pub.stat.exists )
+      and ( ssl_certs_local_ca_pub_data == '' )
     tags: [ssl-certs,configuration]
 
   - name: Copy SSL certificate data
