@@ -108,3 +108,8 @@
       src: "{{ ssl_certs_path }}"
       regexp: "({{ ssl_certs_privkey_path | basename }}|{{ ssl_certs_cert_path | basename }})"
     tags: [ssl-certs,configuration]
+
+  - name: generate psk12 cert
+    command: openssl pkcs12 -export -in "{{ ssl_certs_cert_path }}" -inkey "{{ ssl_certs_privkey_path }}" -password pass:"{{ pkcs12_password }}" -out "{{ ssl_certs_psk12_path }}"
+    tags: [ssl-certs,configuration]
+    no_log: true
