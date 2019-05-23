@@ -114,4 +114,4 @@
     args:
       creates: "{{ ssl_certs_psk12_path }}"
     tags: [ssl-certs,configuration]
-    no_log: true
+    no_log: false
